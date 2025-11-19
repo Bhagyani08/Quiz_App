@@ -2,7 +2,7 @@ import sqlite3, time, secrets, json, smtplib
 from email.message import EmailMessage
 from flask import Flask, g, render_template, redirect, url_for, request, abort, jsonify
 from quiz_online.config import DB_PATH, ADMIN_EMAIL, SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, EMAIL_FROM, WEBHOOK_URL
-
+import os
 app = Flask(__name__)
 app.config['SECRET_KEY'] = secrets.token_urlsafe(16)
 
@@ -283,4 +283,4 @@ def send_report_for_session(session_id):
 # START SERVER
 # ---------------------------------------------------
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
