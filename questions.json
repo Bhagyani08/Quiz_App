@@ -1,5 +1,35 @@
 [
-    {"question": "Explain Newton's first law."},
-    {"question": "What is photosynthesis?"},
-    {"question": "Why is Python popular?"}
+  {"question": "What is a Rule-Based System?"},
+  {"question": "What is an example of rule-based logic in a car?"},
+  {"question": "What is Fuzzy Logic used for?"},
+  {"question": "Difference between normal rules and fuzzy rules?"},
+  {"question": "What is Association Rule Learning?"},
+  {"question": "What is Rule Induction?"},
+  {"question": "What is supervised learning?"},
+  {"question": "Give one automotive example of supervised learning."},
+  {"question": "What is a Decision Tree?"},
+  {"question": "What does regression predict?"},
+  {"question": "What does classification predict?"},
+  {"question": "Why do we train/test split data?"},
+  {"question": "What is unsupervised learning?"},
+  {"question": "Give one automotive example of unsupervised learning."},
+  {"question": "What does K-Means do?"},
+  {"question": "What is anomaly detection?"},
+  {"question": "What does PCA do?"},
+  {"question": "What is Reinforcement Learning?"},
+  {"question": "Give an automotive example of RL."},
+  {"question": "What is Q-Learning?"},
+  {"question": "What is a neural network?"},
+  {"question": "What is a CNN mainly used for?"},
+  {"question": "What is an RNN/LSTM used for?"},
+  {"question": "What is the main advantage of LSTM?"},
+  {"question": "What is an MLP?"},
+  {"question": "What are Tiny Neural Networks used for?"},
+  {"question": "Why is DL better than ML for images?"},
+  {"question": "What is Hybrid AI?"},
+  {"question": "Give an example of Hybrid AI."},
+  {"question": "What is the difference between AI and ML?"}
 ]
+
+
+
