@@ -74,6 +74,8 @@ def login():
         session["user_bin"] = bin_id
         session["answers"] = [""] * len(QUESTIONS)
         session["q_index"] = 0
+        session["events"] = []
+        session["tab_switch_count"] = 0
 
         # Start timer
         session["start_time"] = int(time.time())
@@ -122,8 +124,11 @@ def quiz():
                 "answers": [
                     {"question": QUESTIONS[i]["question"], "answer": session["answers"][i]}
                     for i in range(len(QUESTIONS))
-                ]
+                ],
+                "events": session["events"]
             }
+
+            print("Submitting answers for user:", session["user_name"], session["events"])
             update_user_bin(session["user_bin"], payload)
             return redirect("/done")
 
@@ -151,6 +156,11 @@ def done():
 def restart():
     session["q_index"] = 0
     session["answers"] = [""] * len(QUESTIONS)
+    session["events"] = []
+    if "tab_switch_count" not in session:
+        session["tab_switch_count"] = 0
+
+    print("Quiz restarted by user.")
 
     # Restart timer
     session["start_time"] = int(time.time())
@@ -161,6 +171,137 @@ def restart():
 def restart_full():
     session.clear()
     return redirect("/")
+# @app.route("/tab_switched", methods=["POST"])
+# def tab_switched():
+#     if "user_bin" not in session:
+#         return "", 204
+
+#     bin_id = session["user_bin"]
+
+   
+
+#     log = {
+#         "event": "tab_switch",
+#         "timestamp": int(time.time())
+#     }
+
+#     session["events"].append(log)
+#     session.modified = True
+
+#     print("Tab switch detected:", session["events"])
+#     # Load previous data from JSONBin
+#     # url_get = f"{JSONBIN_API_BASE}/b/{bin_id}/latest"
+#     # res = requests.get(url_get, headers=HEADERS)
+#     # data = res.json()["record"]
+
+#     # # Append event log
+#     # if "events" not in data:
+#     #     data["events"] = []
+
+#     # data["events"].append(log)
+
+#     # # Save back to JSONBin
+#     # update_user_bin(bin_id, data)
+
+#     return ("", 204)
+# @app.route("/tab_switched", methods=["POST"])
+# def tab_switched():
+#     if "user_bin" not in session:
+#         return "", 204
+
+#     bin_id = session["user_bin"]
+
+#     # Count tab switches
+#     if "tab_switch_count" not in session:
+#         session["tab_switch_count"] = 0
+    
+#     session["tab_switch_count"] += 1
+#     tab_count = session["tab_switch_count"]
+
+#     log = {
+#         "event": "tab_switch",
+#         "timestamp": int(time.time()),
+#         "count": tab_count
+#     }
+
+#     session["events"].append(log)
+#     session.modified = True
+
+#     print("Tab switch detected:", session["events"])
+
+#     # Determine response
+#     if tab_count == 3:
+#         log["warning"] = "malpractice_detected"
+#         session["events"][-1] = log
+#         session.modified = True
+#         return {"status": "malpractice", "message": "Malpractice detected! Multiple tab switches."}, 403
+#     elif tab_count in [1, 2]:
+#         return {"status": "warning", "message": f"Warning: Do not switch tabs. This is attempt {tab_count}/2."}, 200
+
+#     return ("", 204)
+@app.route("/tab_switched", methods=["POST"])
+def tab_switched():
+    if "user_bin" not in session:
+        return "", 204
+
+    # Initialize event log
+    if "events" not in session:
+        session["events"] = []
+
+    # Initialize tab switch count
+    if "tab_switch_count" not in session:
+        session["tab_switch_count"] = 0
+    
+    # Update counter
+    session["tab_switch_count"] += 1
+    tab_count = session["tab_switch_count"]
+
+    if session["tab_switch_count"] > 3:
+        log = {
+            "event": "tab_switch",
+            "timestamp": int(time.time()),
+            "count": tab_count,
+            "warning": "malpractice_detected, exited quiz"
+        }
+    else:
+        log = {
+            "event": "tab_switch",
+            "timestamp": int(time.time()),
+            "count": tab_count
+        }
+
+    session["events"].append(log)
+    session.modified = True
+
+    print("Tab switch detected:", session["events"])
+
+    # 3rd time → malpractice
+    if tab_count > 3:
+        payload = {
+                "name": session["user_name"],
+                "email": session["user_email"],
+                "answers": [
+                    {"question": QUESTIONS[i]["question"], "answer": session["answers"][i]}
+                    for i in range(len(QUESTIONS))
+                ],
+                "events": session["events"]
+            }
+        update_user_bin(session["user_bin"], payload)
+        return {
+            "status": "malpractice",
+            "message": "Malpractice detected! You switched tabs 3 times."
+        }, 200  # return JSON (DO NOT use 403)
+
+    # 1st or 2nd time → show warning
+    if tab_count in [1, 2]:
+        return {
+            "status": "warning",
+            "message": f"Warning: Do not switch tabs! Attempt {tab_count}/3."
+        }, 200
+
+    # default empty response
+    return ("", 204)
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True)
