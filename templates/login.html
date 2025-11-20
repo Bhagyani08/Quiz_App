@@ -1,48 +1,50 @@
-
-<!-- <!doctype html>
-<html>
-<body>
-<h1>Start Quiz</h1>
-<form method="post">
-<label>Name</label><input name="name" required>
-<label>Email</label><input name="email" type="email" required>
-<button type="submit">Start</button>
-</form>
-</body>
-</html> -->
 <!DOCTYPE html>
 <html>
 <head>
     <title>Start Quiz</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        .corner-logo {
+            position: fixed;
+            top: 15px;
+            right: 20px;
+            width: 150px;
+            z-index: 999999;
+        }
+    </style>
 </head>
 
 <body class="bg-light">
 
-<div class="container d-flex justify-content-center mt-5">
-    <div class="card shadow p-4" style="width: 450px;">
+    <!-- TOP-RIGHT COMPANY LOGO -->
+    <img src="{{ url_for('static', filename='images/supremology_logo.png') }}"
+         class="corner-logo" alt="Company Logo">
 
-        <h2 class="text-primary mb-3">Start Quiz</h2>
+    <div class="container d-flex justify-content-center mt-5">
+        <div class="card shadow p-4" style="width: 450px;">
 
-        <form method="POST">
+            <h2 class="text-primary mb-3">Start Quiz</h2>
 
-            <label class="fw-bold">Your Name</label>
-            <input type="text" class="form-control mb-3" name="name" required>
+            <form method="POST">
 
-            <label class="fw-bold">Email</label>
-            <input type="email" class="form-control mb-4" name="email" required>
+                <label class="fw-bold">Your Name</label>
+                <input type="text" class="form-control mb-3" name="name" required>
 
-            <button type="submit" class="btn btn-primary w-100">Start Quiz</button>
-        </form>
+                <label class="fw-bold">Email</label>
+                <input type="email" class="form-control mb-4" name="email" required>
 
-        <hr class="my-4">
+                <button type="submit" class="btn btn-primary w-100">Start Quiz</button>
+            </form>
 
-        <p class="text-muted small">
-            Your answers will be saved securely for your session.
-        </p>
+            <hr class="my-4">
 
+            <p class="text-muted small">
+                Your answers will be saved securely for your session.
+            </p>
+
+        </div>
     </div>
-</div>
 
 </body>
 </html>

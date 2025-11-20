@@ -171,74 +171,7 @@ def restart():
 def restart_full():
     session.clear()
     return redirect("/")
-# @app.route("/tab_switched", methods=["POST"])
-# def tab_switched():
-#     if "user_bin" not in session:
-#         return "", 204
 
-#     bin_id = session["user_bin"]
-
-   
-
-#     log = {
-#         "event": "tab_switch",
-#         "timestamp": int(time.time())
-#     }
-
-#     session["events"].append(log)
-#     session.modified = True
-
-#     print("Tab switch detected:", session["events"])
-#     # Load previous data from JSONBin
-#     # url_get = f"{JSONBIN_API_BASE}/b/{bin_id}/latest"
-#     # res = requests.get(url_get, headers=HEADERS)
-#     # data = res.json()["record"]
-
-#     # # Append event log
-#     # if "events" not in data:
-#     #     data["events"] = []
-
-#     # data["events"].append(log)
-
-#     # # Save back to JSONBin
-#     # update_user_bin(bin_id, data)
-
-#     return ("", 204)
-# @app.route("/tab_switched", methods=["POST"])
-# def tab_switched():
-#     if "user_bin" not in session:
-#         return "", 204
-
-#     bin_id = session["user_bin"]
-
-#     # Count tab switches
-#     if "tab_switch_count" not in session:
-#         session["tab_switch_count"] = 0
-    
-#     session["tab_switch_count"] += 1
-#     tab_count = session["tab_switch_count"]
-
-#     log = {
-#         "event": "tab_switch",
-#         "timestamp": int(time.time()),
-#         "count": tab_count
-#     }
-
-#     session["events"].append(log)
-#     session.modified = True
-
-#     print("Tab switch detected:", session["events"])
-
-#     # Determine response
-#     if tab_count == 3:
-#         log["warning"] = "malpractice_detected"
-#         session["events"][-1] = log
-#         session.modified = True
-#         return {"status": "malpractice", "message": "Malpractice detected! Multiple tab switches."}, 403
-#     elif tab_count in [1, 2]:
-#         return {"status": "warning", "message": f"Warning: Do not switch tabs. This is attempt {tab_count}/2."}, 200
-
-#     return ("", 204)
 @app.route("/tab_switched", methods=["POST"])
 def tab_switched():
     if "user_bin" not in session:

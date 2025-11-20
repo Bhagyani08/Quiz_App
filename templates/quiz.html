@@ -9,11 +9,20 @@
       /* small visual tweaks to match your screenshot */
       .card { border-radius: 8px; }
       #timer { font-weight: 600; font-size: 1rem; }
+      .corner-logo {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            width: 130px;
+            z-index: 9999;
+        }
     </style>
 </head>
 
 <body class="bg-light">
-
+<img src="{{ url_for('static', filename='images/supremology_logo.png') }}"
+    class="corner-logo"
+    alt="Company Logo">
 <div class="container d-flex justify-content-center mt-5">
     <div class="card shadow p-4 mb-5" style="width: 700px;">
 
@@ -132,20 +141,7 @@
     }
 </script>
 <script>
-// document.addEventListener("visibilitychange", function () {
-//     if (document.hidden) {
-//         fetch('/tab_switched', {method: 'POST'})
-//         .then(r => r.json())
-//         .then(data => {
-//             if (data.status === 'warning') {
-//             alert(data.message);
-//             } else if (data.status === 'malpractice') {
-//             alert(data.message);
-//             // Optionally redirect or disable quiz
-//             }
-//         });
-//     }
-// });
+
 document.addEventListener("visibilitychange", function () {
     if (document.hidden) {
         fetch('/tab_switched', { method: 'POST' })
