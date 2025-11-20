@@ -4,9 +4,9 @@ import json
 import time
 import requests
 from flask import Flask, render_template, request, redirect, session
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 
-load_dotenv()
+#load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET", "secret-key")
