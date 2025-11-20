@@ -79,7 +79,7 @@ def login():
 
         # Start timer
         session["start_time"] = int(time.time())
-        session["time_limit"] = 30 * 60     # 30 minutes
+        session["time_limit"] = 20 * 60     # 20 minutes
 
         return redirect("/quiz")
 
