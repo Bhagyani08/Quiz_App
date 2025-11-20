@@ -152,7 +152,7 @@ JSONBIN_MASTER_KEY = os.getenv("JSONBIN_MASTER_KEY")
 JSONBIN_API_BASE = "https://api.jsonbin.io/v3"
 
 HEADERS = {
-    "X-Master-Key": JSONBIN_MASTER_KEY,
+    "X-Master-Key": $2a$10$SaPWJmOeO9YQhkJf9LwTN.r2f426WG7EFA0P4rlmEaDlJm8IbrBpW,
     "Content-Type": "application/json"
 }
 
