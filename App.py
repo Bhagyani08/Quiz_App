@@ -1,129 +1,4 @@
-# import os
-# import json
-# import requests
-# from flask import Flask, render_template, request, redirect, session
-# from dotenv import load_dotenv
 
-# load_dotenv()
-
-# app = Flask(__name__)
-# app.secret_key = os.getenv("FLASK_SECRET", "secret-key")
-
-# ###############################################################################
-# # LOAD QUESTIONS LOCALLY
-# ###############################################################################
-# def load_questions():
-#     with open("questions.json", "r") as f:
-#         return json.load(f)
-
-# QUESTIONS = load_questions()
-
-# ###############################################################################
-# # (Optional) SAVE USER ANSWERS TO JSONBIN
-# ###############################################################################
-# JSONBIN_MASTER_KEY = os.getenv("JSONBIN_MASTER_KEY")
-# JSONBIN_API_BASE = "https://api.jsonbin.io/v3"
-
-# HEADERS = {
-#     "X-Master-Key": JSONBIN_MASTER_KEY,
-#     "Content-Type": "application/json"
-# }
-
-# def create_user_bin(name, email):
-#     url = f"{JSONBIN_API_BASE}/b"
-#     body = {"name": name, "email": email, "answers": []}
-#     res = requests.post(url, json=body, headers=HEADERS)
-#     return res.json()["metadata"]["id"]
-
-# def update_user_bin(bin_id, payload):
-#     url = f"{JSONBIN_API_BASE}/b/{bin_id}"
-#     requests.put(url, json=payload, headers=HEADERS)
-
-# ###############################################################################
-# # ROUTES
-# ###############################################################################
-
-# @app.route("/", methods=["GET", "POST"])
-# def login():
-#     if request.method == "POST":
-#         name = request.form["name"].strip()
-#         email = request.form["email"].strip()
-
-#         # create user bin (optional)
-#         bin_id = create_user_bin(name, email)
-
-#         session["user_name"] = name
-#         session["user_email"] = email
-#         session["user_bin"] = bin_id
-#         session["answers"] = [""] * len(QUESTIONS)
-#         session["q_index"] = 0
-
-#         return redirect("/quiz")
-
-#     return render_template("login.html")
-
-# @app.route("/quiz", methods=["GET", "POST"])
-# def quiz():
-#     if "user_bin" not in session:
-#         return redirect("/")
-
-#     q_index = session["q_index"]
-
-#     if request.method == "POST":
-#         action = request.form["action"]
-#         ans = request.form.get("answer", "")
-
-#         session["answers"][q_index] = ans
-
-#         if action == "previous" and q_index > 0:
-#             session["q_index"] -= 1
-#         elif action == "next" and q_index < len(QUESTIONS) - 1:
-#             session["q_index"] += 1
-#         elif action == "submit":
-#             payload = {
-#                 "name": session["user_name"],
-#                 "email": session["user_email"],
-#                 "answers": [
-#                     {"question": QUESTIONS[i]["question"], "answer": session["answers"][i]}
-#                     for i in range(len(QUESTIONS))
-#                 ]
-#             }
-
-#             update_user_bin(session["user_bin"], payload)
-#             return redirect("/done")
-
-#         return redirect("/quiz")
-
-#     return render_template(
-#         "quiz.html",
-#         number=q_index + 1,
-#         total=len(QUESTIONS),
-#         question_text=QUESTIONS[q_index]["question"],
-#         current_answer=session["answers"][q_index]
-#     )
-
-# @app.route("/done")
-# def done():
-#     return render_template(
-#         "done.html",
-#         name=session.get("user_name"),
-#         email=session.get("user_email"),
-#         bin_id=session.get("user_bin")
-#     )
-
-# @app.route("/restart")
-# def restart():
-#     session["q_index"] = 0
-#     session["answers"] = [""] * len(QUESTIONS)
-#     return redirect("/quiz")
-
-# @app.route("/restart_full")
-# def restart_full():
-#     session.clear()
-#     return redirect("/")
-
-# if __name__ == "__main__":
-#     app.run(host="0.0.0.0", debug=True)
 import os
 import json
 import time
@@ -148,11 +23,11 @@ QUESTIONS = load_questions()
 ###############################################################################
 # (Optional) SAVE USER ANSWERS TO JSONBIN
 ###############################################################################
-JSONBIN_MASTER_KEY = os.getenv("JSONBIN_MASTER_KEY")
+#JSONBIN_MASTER_KEY = os.getenv("JSONBIN_MASTER_KEY")
 JSONBIN_API_BASE = "https://api.jsonbin.io/v3"
 
 HEADERS = {
-    "X-Master-Key": $2a$10$SaPWJmOeO9YQhkJf9LwTN.r2f426WG7EFA0P4rlmEaDlJm8IbrBpW,
+    "X-Master-Key": "$2a$10$SaPWJmOeO9YQhkJf9LwTN.r2f426WG7EFA0P4rlmEaDlJm8IbrBpW",
     "Content-Type": "application/json"
 }
 
