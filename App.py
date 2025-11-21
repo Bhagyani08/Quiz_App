@@ -20,7 +20,7 @@ QUESTIONS = load_questions()
 # JSONBIN SETTINGS
 ###############################################################################
 JSONBIN_API_BASE = "https://api.jsonbin.io/v3"
-LOOKUP_BIN_ID = "69200ef0d0ea881f40f62b89"   # ⬅ your lookup bin ID
+LOOKUP_BIN_ID = "6920112bae596e708f66ea54"   # ⬅ your lookup bin ID
 
 HEADERS = {
     "X-Master-Key": "$2a$10$0nEWKk89vS6CBYlIvV.zpuxU7Ja/DQ64Qk13e7mV60jM7ewVcYuGa",
