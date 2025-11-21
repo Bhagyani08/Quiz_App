@@ -27,7 +27,7 @@ QUESTIONS = load_questions()
 JSONBIN_API_BASE = "https://api.jsonbin.io/v3"
 
 HEADERS = {
-    "X-Master-Key": "$2a$10$0nEWKk89vS6CBYlIvV.zpuxU7Ja/DQ64Qk13e7mV60jM7ewVcYuGa",
+    "X-Master-Key": "$2a$10$SaPWJmOeO9YQhkJf9LwTN.r2f426WG7EFA0P4rlmEaDlJm8IbrBpW",
     "Content-Type": "application/json"
 }
 
@@ -60,15 +60,58 @@ def get_remaining_time():
 ###############################################################################
 
 @app.route("/", methods=["GET", "POST"])
+@app.route("/", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         name = request.form["name"].strip()
         email = request.form["email"].strip()
 
-        # Create user bin (optional)
+        # --------------------------------------------------------------------
+        # 🔥 STEP 1 — CHECK IF THIS USER ALREADY HAS A SUBMISSION
+        # We search a COLLECTION named "quiz_users"
+        # --------------------------------------------------------------------
+
+        query_url = f"{JSONBIN_API_BASE}/c/quiz_users/query"
+
+        query = {
+            "email": {"$eq": email}
+        }
+
+        try:
+            check = requests.post(query_url, json=query, headers=HEADERS).json()
+
+            # If any record found with same email → BLOCK QUIZ
+            if check.get("results"):
+                record = check["results"][0]
+
+                if "answers" in record and len(record["answers"]) > 0:
+                    return render_template("already_done.html", name=name, email=email)
+        except Exception as e:
+            print("Search error:", e)
+
+        # --------------------------------------------------------------------
+        # 🤝 STEP 2 — NEW USER → CREATE BIN
+        # --------------------------------------------------------------------
         bin_id = create_user_bin(name, email)
 
-        # Set session values
+        # Also save a reference in collection for future blocking
+        user_ref = {
+            "name": name,
+            "email": email,
+            "bin_id": bin_id,
+            "answers": []
+        }
+
+        # Insert to collection
+        requests.post(
+            f"{JSONBIN_API_BASE}/c/quiz_users",
+            json=user_ref,
+            headers=HEADERS
+        )
+
+        # --------------------------------------------------------------------
+        # 🎯 STEP 3 — LOAD USER SESSION
+        # --------------------------------------------------------------------
         session["user_name"] = name
         session["user_email"] = email
         session["user_bin"] = bin_id
@@ -77,13 +120,13 @@ def login():
         session["events"] = []
         session["tab_switch_count"] = 0
 
-        # Start timer
         session["start_time"] = int(time.time())
-        session["time_limit"] = 20 * 60     # 20 minutes
+        session["time_limit"] = 20 * 60  # 20 mins
 
         return redirect("/quiz")
 
     return render_template("login.html")
+
 
 @app.route("/quiz", methods=["GET", "POST"])
 def quiz():
