@@ -1,12 +1,8 @@
-
 import os
 import json
 import time
 import requests
 from flask import Flask, render_template, request, redirect, session
-#from dotenv import load_dotenv
-
-#load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET", "secret-key")
@@ -21,19 +17,34 @@ def load_questions():
 QUESTIONS = load_questions()
 
 ###############################################################################
-# (Optional) SAVE USER ANSWERS TO JSONBIN
+# JSONBIN SETTINGS
 ###############################################################################
-#JSONBIN_MASTER_KEY = os.getenv("JSONBIN_MASTER_KEY")
 JSONBIN_API_BASE = "https://api.jsonbin.io/v3"
+LOOKUP_BIN_ID = "69200ef0d0ea881f40f62b89"   # ⬅ your lookup bin ID
 
 HEADERS = {
     "X-Master-Key": "$2a$10$SaPWJmOeO9YQhkJf9LwTN.r2f426WG7EFA0P4rlmEaDlJm8IbrBpW",
     "Content-Type": "application/json"
 }
 
+###############################################################################
+# JSONBIN FUNCTIONS (WORK WITH FREE PLAN)
+###############################################################################
+def load_lookup_bin():
+    """Load the lookup bin that stores completed emails."""
+    url = f"{JSONBIN_API_BASE}/b/{LOOKUP_BIN_ID}/latest"
+    res = requests.get(url, headers=HEADERS).json()
+    return res["record"]
+
+def save_lookup_bin(data):
+    """Save back updated lookup list."""
+    url = f"{JSONBIN_API_BASE}/b/{LOOKUP_BIN_ID}"
+    requests.put(url, json=data, headers=HEADERS)
+
 def create_user_bin(name, email):
+    """Create personal answer bin for user."""
     url = f"{JSONBIN_API_BASE}/b"
-    body = {"name": name, "email": email, "answers": []}
+    body = {"name": name, "email": email, "answers": [], "events": []}
     res = requests.post(url, json=body, headers=HEADERS)
     return res.json()["metadata"]["id"]
 
@@ -47,71 +58,40 @@ def update_user_bin(bin_id, payload):
 def get_remaining_time():
     start = session.get("start_time")
     limit = session.get("time_limit", 0)
-
     if not start:
         return 0
-
     now = int(time.time())
-    remaining = (start + limit) - now
-    return max(0, remaining)
+    return max(0, (start + limit) - now)
 
 ###############################################################################
 # ROUTES
 ###############################################################################
 
 @app.route("/", methods=["GET", "POST"])
-@app.route("/", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         name = request.form["name"].strip()
-        email = request.form["email"].strip()
+        email = request.form["email"].strip().lower()
 
-        # --------------------------------------------------------------------
-        # 🔥 STEP 1 — CHECK IF THIS USER ALREADY HAS A SUBMISSION
-        # We search a COLLECTION named "quiz_users"
-        # --------------------------------------------------------------------
+        # -------------------------------------------------------------
+        # STEP 1 — LOAD LOOKUP BIN (FREE PLAN SAFE)
+        # -------------------------------------------------------------
+        lookup = load_lookup_bin()
 
-        query_url = f"{JSONBIN_API_BASE}/c/quiz_users/query"
+        # If user already completed quiz → BLOCK
+        if email in lookup["completed_users"]:
+            return render_template("already_done.html",
+                                   name=name,
+                                   email=email)
 
-        query = {
-            "email": {"$eq": email}
-        }
-
-        try:
-            check = requests.post(query_url, json=query, headers=HEADERS).json()
-
-            # If any record found with same email → BLOCK QUIZ
-            if check.get("results"):
-                record = check["results"][0]
-
-                if "answers" in record and len(record["answers"]) > 0:
-                    return render_template("already_done.html", name=name, email=email)
-        except Exception as e:
-            print("Search error:", e)
-
-        # --------------------------------------------------------------------
-        # 🤝 STEP 2 — NEW USER → CREATE BIN
-        # --------------------------------------------------------------------
+        # -------------------------------------------------------------
+        # STEP 2 — CREATE PERSONAL BIN
+        # -------------------------------------------------------------
         bin_id = create_user_bin(name, email)
 
-        # Also save a reference in collection for future blocking
-        user_ref = {
-            "name": name,
-            "email": email,
-            "bin_id": bin_id,
-            "answers": []
-        }
-
-        # Insert to collection
-        requests.post(
-            f"{JSONBIN_API_BASE}/c/quiz_users",
-            json=user_ref,
-            headers=HEADERS
-        )
-
-        # --------------------------------------------------------------------
-        # 🎯 STEP 3 — LOAD USER SESSION
-        # --------------------------------------------------------------------
+        # -------------------------------------------------------------
+        # STEP 3 — INITIALIZE SESSION
+        # -------------------------------------------------------------
         session["user_name"] = name
         session["user_email"] = email
         session["user_bin"] = bin_id
@@ -121,7 +101,7 @@ def login():
         session["tab_switch_count"] = 0
 
         session["start_time"] = int(time.time())
-        session["time_limit"] = 20 * 60  # 20 mins
+        session["time_limit"] = 20 * 60   # 20 minutes
 
         return redirect("/quiz")
 
@@ -134,22 +114,13 @@ def quiz():
         return redirect("/")
 
     q_index = session["q_index"]
-
     remaining = get_remaining_time()
 
-    # Time's up → auto-submit
+    # ----------- TIME UP → AUTO SUBMIT ----------------------
     if remaining <= 0:
-        payload = {
-            "name": session["user_name"],
-            "email": session["user_email"],
-            "answers": [
-                {"question": QUESTIONS[i]["question"], "answer": session["answers"][i]}
-                for i in range(len(QUESTIONS))
-            ]
-        }
-        update_user_bin(session["user_bin"], payload)
         return redirect("/done")
 
+    # ----------- FORM HANDLING ------------------------------
     if request.method == "POST":
         action = request.form["action"]
         ans = request.form.get("answer", "")
@@ -161,22 +132,11 @@ def quiz():
         elif action == "next" and q_index < len(QUESTIONS) - 1:
             session["q_index"] += 1
         elif action == "submit":
-            payload = {
-                "name": session["user_name"],
-                "email": session["user_email"],
-                "answers": [
-                    {"question": QUESTIONS[i]["question"], "answer": session["answers"][i]}
-                    for i in range(len(QUESTIONS))
-                ],
-                "events": session["events"]
-            }
-
-            print("Submitting answers for user:", session["user_name"], session["events"])
-            update_user_bin(session["user_bin"], payload)
             return redirect("/done")
 
         return redirect("/quiz")
 
+    # ----------- PAGE RENDER -------------------------------
     return render_template(
         "quiz.html",
         number=q_index + 1,
@@ -186,97 +146,76 @@ def quiz():
         remaining_seconds=remaining
     )
 
+
 @app.route("/done")
 def done():
+    email = session.get("user_email")
+
+    # SAVE ANSWERS TO PERSONAL BIN
+    payload = {
+        "name": session["user_name"],
+        "email": email,
+        "answers": [
+            {"question": QUESTIONS[i]["question"], "answer": session["answers"][i]}
+            for i in range(len(QUESTIONS))
+        ],
+        "events": session.get("events", [])
+    }
+    update_user_bin(session["user_bin"], payload)
+
+    # -------------------------------------------------------------
+    # ADD EMAIL TO lookup bin (ONE-TIME ATTEMPT)
+    # -------------------------------------------------------------
+    lookup = load_lookup_bin()
+
+    if email not in lookup["completed_users"]:
+        lookup["completed_users"].append(email)
+        save_lookup_bin(lookup)
+
     return render_template(
         "done.html",
-        name=session.get("user_name"),
-        email=session.get("user_email"),
-        bin_id=session.get("user_bin")
+        name=session["user_name"],
+        email=email,
+        bin_id=session["user_bin"]
     )
 
-@app.route("/restart")
-def restart():
-    session["q_index"] = 0
-    session["answers"] = [""] * len(QUESTIONS)
-    session["events"] = []
-    if "tab_switch_count" not in session:
-        session["tab_switch_count"] = 0
-
-    print("Quiz restarted by user.")
-
-    # Restart timer
-    session["start_time"] = int(time.time())
-
-    return redirect("/quiz")
-
-@app.route("/restart_full")
-def restart_full():
-    session.clear()
-    return redirect("/")
 
 @app.route("/tab_switched", methods=["POST"])
 def tab_switched():
     if "user_bin" not in session:
         return "", 204
 
-    # Initialize event log
     if "events" not in session:
         session["events"] = []
 
-    # Initialize tab switch count
     if "tab_switch_count" not in session:
         session["tab_switch_count"] = 0
-    
-    # Update counter
-    session["tab_switch_count"] += 1
-    tab_count = session["tab_switch_count"]
 
-    if session["tab_switch_count"] > 3:
-        log = {
-            "event": "tab_switch",
-            "timestamp": int(time.time()),
-            "count": tab_count,
-            "warning": "malpractice_detected, exited quiz"
-        }
-    else:
-        log = {
-            "event": "tab_switch",
-            "timestamp": int(time.time()),
-            "count": tab_count
-        }
+    session["tab_switch_count"] += 1
+    count = session["tab_switch_count"]
+
+    log = {
+        "event": "tab_switch",
+        "timestamp": int(time.time()),
+        "count": count
+    }
+
+    if count > 3:
+        log["warning"] = "malpractice_detected"
 
     session["events"].append(log)
     session.modified = True
 
-    print("Tab switch detected:", session["events"])
-
-    # 3rd time → malpractice
-    if tab_count > 3:
-        payload = {
-                "name": session["user_name"],
-                "email": session["user_email"],
-                "answers": [
-                    {"question": QUESTIONS[i]["question"], "answer": session["answers"][i]}
-                    for i in range(len(QUESTIONS))
-                ],
-                "events": session["events"]
-            }
-        update_user_bin(session["user_bin"], payload)
+    if count > 3:
         return {
             "status": "malpractice",
-            "message": "Malpractice detected! You switched tabs 3 times."
-        }, 200  # return JSON (DO NOT use 403)
-
-    # 1st or 2nd time → show warning
-    if tab_count in [1, 2]:
-        return {
-            "status": "warning",
-            "message": f"Warning: Do not switch tabs! Attempt {tab_count}/3."
+            "message": "Malpractice detected! Quiz auto-submitted."
         }, 200
 
-    # default empty response
-    return ("", 204)
+    return {
+        "status": "warning",
+        "message": f"Warning {count}/3: Do not switch tabs!"
+    }, 200
 
 
 if __name__ == "__main__":
