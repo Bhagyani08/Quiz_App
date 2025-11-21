@@ -23,7 +23,7 @@ JSONBIN_API_BASE = "https://api.jsonbin.io/v3"
 LOOKUP_BIN_ID = "69200ef0d0ea881f40f62b89"   # ⬅ your lookup bin ID
 
 HEADERS = {
-    "X-Master-Key": "$2a$10$SaPWJmOeO9YQhkJf9LwTN.r2f426WG7EFA0P4rlmEaDlJm8IbrBpW",
+    "X-Master-Key": "$2a$10$0nEWKk89vS6CBYlIvV.zpuxU7Ja/DQ64Qk13e7mV60jM7ewVcYuGa",
     "Content-Type": "application/json"
 }
 
