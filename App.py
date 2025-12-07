@@ -4,12 +4,13 @@ import json
 import time
 import requests
 from flask import Flask, render_template, request, redirect, session
-#from dotenv import load_dotenv
+from dotenv import load_dotenv
 
-#load_dotenv()
+load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET", "secret-key")
+
 
 ###############################################################################
 # LOAD QUESTIONS LOCALLY
@@ -65,23 +66,67 @@ def login():
         name = request.form["name"].strip()
         email = request.form["email"].strip()
 
-        # Create user bin (optional)
+        # --------------------------------------------------------------------
+        # 🔥 STEP 1 — CHECK IF THIS USER ALREADY HAS A SUBMISSION
+        # We search a COLLECTION named "quiz_users"
+        # --------------------------------------------------------------------
+
+        query_url = f"{JSONBIN_API_BASE}/c/quiz_users/query"
+
+        query = {
+            "email": {"$eq": email}
+        }
+
+        try:
+            check = requests.post(query_url, json=query, headers=HEADERS).json()
+
+            # If any record found with same email → BLOCK QUIZ
+            if check.get("results"):
+                record = check["results"][0]
+
+                if "answers" in record and len(record["answers"]) > 0:
+                    return render_template("already_done.html", name=name, email=email)
+        except Exception as e:
+            print("Search error:", e)
+
+        # --------------------------------------------------------------------
+        # 🤝 STEP 2 — NEW USER → CREATE BIN
+        # --------------------------------------------------------------------
         bin_id = create_user_bin(name, email)
 
-        # Set session values
+        # Also save a reference in collection for future blocking
+        user_ref = {
+            "name": name,
+            "email": email,
+            "bin_id": bin_id,
+            "answers": []
+        }
+
+        # Insert to collection
+        requests.post(
+            f"{JSONBIN_API_BASE}/c/quiz_users",
+            json=user_ref,
+            headers=HEADERS
+        )
+
+        # --------------------------------------------------------------------
+        # 🎯 STEP 3 — LOAD USER SESSION
+        # --------------------------------------------------------------------
         session["user_name"] = name
         session["user_email"] = email
         session["user_bin"] = bin_id
         session["answers"] = [""] * len(QUESTIONS)
         session["q_index"] = 0
+        session["events"] = []
+        session["tab_switch_count"] = 0
 
-        # Start timer
         session["start_time"] = int(time.time())
-        session["time_limit"] = 30 * 60     # 30 minutes
+        session["time_limit"] = 20 * 60  # 20 mins
 
         return redirect("/quiz")
 
     return render_template("login.html")
+
 
 @app.route("/quiz", methods=["GET", "POST"])
 def quiz():
@@ -162,5 +207,34 @@ def restart_full():
     session.clear()
     return redirect("/")
 
+@app.route("/tab_switched", methods=["POST"])
+def tab_switched():
+    if "user_bin" not in session:
+        return "", 204
+
+    bin_id = session["user_bin"]
+
+    log = {
+        "event": "tab_switch",
+        "timestamp": int(time.time())
+    }
+
+    # Load previous data from JSONBin
+    url_get = f"{JSONBIN_API_BASE}/b/{bin_id}/latest"
+    res = requests.get(url_get, headers=HEADERS)
+    data = res.json()["record"]
+
+    # Append event log
+    if "events" not in data:
+        data["events"] = []
+
+    data["events"].append(log)
+
+    # Save back to JSONBin
+    update_user_bin(bin_id, data)
+
+    return ("", 204)
+
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", debug=True)
+    app.run(host="127.0.0.1", port=5000, debug=False)

@@ -131,6 +131,16 @@
         }, 1000);
     }
 </script>
+<script>
+document.addEventListener("visibilitychange", function () {
+    if (document.hidden) {
+        fetch("/tab_switched", {
+            method: "POST"
+        });
+    }
+});
+</script>
+
 
 </body>
 </html>
