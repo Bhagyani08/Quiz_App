@@ -365,5 +365,5 @@ def run_pipeline():
     print(f"\n✨ Pipeline completed successfully!")
 
 if __name__ == "__main__":
-    run_sample_json()
-    # run_pipeline()
+    # run_sample_json()
+    run_pipeline()

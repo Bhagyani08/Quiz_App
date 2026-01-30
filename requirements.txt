@@ -3,3 +3,6 @@ requests>=2.25
 gunicorn==21.2.0
 cryptography==42.0.5
 python-dotenv==1.0.1
+pandas
+openpyxl
+openai
