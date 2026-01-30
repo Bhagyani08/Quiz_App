@@ -27,9 +27,12 @@ QUESTIONS = load_questions()
 JSONBIN_API_BASE = "https://api.jsonbin.io/v3"
 
 HEADERS = {
-    "X-Master-Key": "$2a$10$SaPWJmOeO9YQhkJf9LwTN.r2f426WG7EFA0P4rlmEaDlJm8IbrBpW",
+    "X-Master-Key": "$2a$10$0nEWKk89vS6CBYlIvV.zpuxU7Ja/DQ64Qk13e7mV60jM7ewVcYuGa",
     "Content-Type": "application/json"
 }
+
+# Admin bin ID for tracking all student submissions
+ADMIN_BIN_ID = "6979e70643b1c97be951794c"
 
 def create_user_bin(name, email):
     url = f"{JSONBIN_API_BASE}/b"
@@ -40,6 +43,42 @@ def create_user_bin(name, email):
 def update_user_bin(bin_id, payload):
     url = f"{JSONBIN_API_BASE}/b/{bin_id}"
     requests.put(url, json=payload, headers=HEADERS)
+
+def get_admin_bin():
+    """Retrieve the current admin bin data"""
+    url = f"{JSONBIN_API_BASE}/b/{ADMIN_BIN_ID}/latest"
+    try:
+        res = requests.get(url, headers=HEADERS)
+        if res.status_code == 200:
+            return res.json()["record"]
+        return {"submissions": []}
+    except:
+        return {"submissions": []}
+
+def add_bin_to_admin(bin_id, name, email):
+    """Add a new student bin ID to the admin tracking bin"""
+    try:
+        # Get current admin data
+        admin_data = get_admin_bin()
+        
+        # Ensure submissions list exists
+        if "submissions" not in admin_data:
+            admin_data["submissions"] = []
+        
+        # Add new submission
+        admin_data["submissions"].append({
+            "bin_id": bin_id,
+            "name": name,
+            "email": email,
+            "timestamp": int(time.time())
+        })
+        
+        # Update admin bin
+        url = f"{JSONBIN_API_BASE}/b/{ADMIN_BIN_ID}"
+        requests.put(url, json=admin_data, headers=HEADERS)
+        print(f"✅ Added bin {bin_id} to admin tracking")
+    except Exception as e:
+        print(f"⚠️ Failed to update admin bin: {e}")
 
 ###############################################################################
 # TIMER FUNCTION
@@ -67,6 +106,9 @@ def login():
 
         # Create user bin (optional)
         bin_id = create_user_bin(name, email)
+        
+        # Track in admin bin
+        add_bin_to_admin(bin_id, name, email)
 
         # Set session values
         session["user_name"] = name
