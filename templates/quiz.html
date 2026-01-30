@@ -9,11 +9,20 @@
       /* small visual tweaks to match your screenshot */
       .card { border-radius: 8px; }
       #timer { font-weight: 600; font-size: 1rem; }
+      .corner-logo {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            width: 130px;
+            z-index: 9999;
+        }
     </style>
 </head>
 
 <body class="bg-light">
-
+<img src="{{ url_for('static', filename='images/supremology_logo.png') }}"
+    class="corner-logo"
+    alt="Company Logo">
 <div class="container d-flex justify-content-center mt-5">
     <div class="card shadow p-4 mb-5" style="width: 700px;">
 
@@ -33,7 +42,7 @@
         <p class="mt-1 fs-5">{{ question_text }}</p>
 
         <form method="POST" id="quizForm">
-            <textarea class="form-control" rows="6" name="answer" required>{{ current_answer }}</textarea>
+            <textarea class="form-control" rows="6" name="answer">{{ current_answer }}</textarea>
 
             <div class="d-flex justify-content-between mt-4">
 
@@ -131,6 +140,31 @@
         }, 1000);
     }
 </script>
+<script>
+
+document.addEventListener("visibilitychange", function () {
+    if (document.hidden) {
+        fetch('/tab_switched', { method: 'POST' })
+        .then(async (r) => {
+            if (r.status === 204) return; // no content (ok)
+            
+            // Safe JSON parsing
+            let data = await r.json();
+
+            if (data.status === 'warning') {
+                alert(data.message);
+            } 
+            else if (data.status === 'malpractice') {
+                alert(data.message);
+                window.location.href = "/done";  // Optional block user
+            }
+        })
+        .catch(err => console.error("Error parsing JSON:", err));
+    }
+});
+
+</script>
+
 
 </body>
 </html>
