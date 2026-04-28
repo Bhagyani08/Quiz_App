@@ -23,7 +23,7 @@ JSONBIN_API_BASE = "https://api.jsonbin.io/v3"
 LOOKUP_BIN_ID = "6920112bae596e708f66ea54"   # ⬅ your lookup bin ID
 
 HEADERS = {
-    "X-Master-Key": "$2a$10$0nEWKk89vS6CBYlIvV.zpuxU7Ja/DQ64Qk13e7mV60jM7ewVcYuGa",
+    "X-Master-Key": "$2a$10$Go9p5a8N/EbuHUlrHT578uLizY8Q6biXz.9HC6LzhF73rm5ooWqry",
     "Content-Type": "application/json"
 }
 
@@ -35,11 +35,17 @@ ADMIN_BIN_ID = "6979e70643b1c97be951794c"
 def load_lookup_bin():
     """Load the lookup bin that stores completed emails."""
     url = f"{JSONBIN_API_BASE}/b/{LOOKUP_BIN_ID}/latest"
-    res = requests.get(url, headers=HEADERS).json()
-    return res["record"]
+    res = requests.get(url, headers=HEADERS)
+    if res.status_code == 200:
+        return res.json().get("record", {"completed_users": []})
+    print(f"Error loading lookup bin: {res.text}")
+    return None
 
 def save_lookup_bin(data):
     """Save back updated lookup list."""
+    if data is None:
+        print("Skipping save_lookup_bin due to invalid data")
+        return
     url = f"{JSONBIN_API_BASE}/b/{LOOKUP_BIN_ID}"
     requests.put(url, json=data, headers=HEADERS)
 
@@ -118,7 +124,7 @@ def login():
         lookup = load_lookup_bin()
 
         # If user already completed quiz → BLOCK
-        if email in lookup["completed_users"]:
+        if lookup and email in lookup.get("completed_users", []):
             return render_template("already_done.html",
                                    name=name,
                                    email=email)
@@ -167,6 +173,7 @@ def quiz():
         ans = request.form.get("answer", "")
 
         session["answers"][q_index] = ans
+        session.modified = True
 
         if action == "previous" and q_index > 0:
             session["q_index"] -= 1
@@ -209,15 +216,15 @@ def done():
     # -------------------------------------------------------------
     lookup = load_lookup_bin()
 
-    if email not in lookup["completed_users"]:
-        lookup["completed_users"].append(email)
+    if lookup and email not in lookup.get("completed_users", []):
+        lookup.setdefault("completed_users", []).append(email)
         save_lookup_bin(lookup)
 
     return render_template(
         "done.html",
-        name=session["user_name"],
+        name=session.get("user_name"),
         email=email,
-        bin_id=session["user_bin"]
+        bin_id=session.get("user_bin")
     )
 
 

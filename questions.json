@@ -1,62 +1,92 @@
 [
   {
-    "question": "How would you design a circular buffer in C for real-time data (e.g., vehicle signals)?"
+    "question": "What will be the output of passing an array to a function in C and modifying its elements? Why does the original array change?"
   },
   {
-    "question": "Explain memory alignment and padding?"
+    "question": "What will be the output when passing a variable to a function and modifying it inside? Explain why the original value does not change."
   },
   {
-    "question": "What is the difference between shallow copy and deep copy in struct handling?"
+    "question": "What will be the output of sizeof a struct containing char and int? Explain padding and alignment."
   },
   {
-    "question": "How do you debug memory leaks ?"
+    "question": "What will be the output when returning an object from a function in C++? Explain constructor and destructor calls."
   },
   {
-    "question": "Explain linker vs compiler responsibilities in a C build system."
+    "question": "What will be the output when calling a virtual function using a base class pointer pointing to a derived object?"
   },
   {
-    "question": "What are race conditions in C and how do you prevent them in multi-threaded systems?"
+    "question": "Given a number with repeated digits, how would you remove duplicates efficiently?"
   },
   {
-    "question": "What is the difference between malloc, calloc, and realloc? When would fragmentation be a concern?"
+    "question": "What will be the output of a bit manipulation program that checks a specific bit using an uninitialized variable? Identify the issue."
   },
   {
-    "question": "Explain RAII and how it helps in resource management ."
+    "question": "How do you check whether a specific bit (e.g., 5th bit) is set or not?"
   },
   {
-    "question": "What are smart pointers (unique_ptr, shared_ptr, weak_ptr)? When to use each?"
+    "question": "How do you toggle a specific bit in an integer?"
   },
   {
-    "question": "Difference between stack vs heap allocation in C++ and performance implications."
+    "question": "What is the time complexity of nested loops where inner loop runs with j = j/2?"
   },
   {
-    "question": "Explain copy constructor vs move constructor with real-world example."
+    "question": "What is the expected output of sliding window maximum for a given array and window size?"
+  },
+  {
+    "question": "What are storage classes in C and how do they affect scope and lifetime?"
+  },
+  {
+    "question": "Explain pointers and their importance in C programming."
+  },
+  {
+    "question": "What is the difference between pass by value and pass by reference?"
+  },
+  {
+    "question": "What is a function pointer and where is it typically used?"
+  },
+  {
+    "question": "What is the difference between pointer to array and array of pointers?"
+  },
+  {
+    "question": "How are strings represented internally in C?"
+  },
+  {
+    "question": "Explain RAII in C++ and why it is important."
+  },
+  {
+    "question": "What are smart pointers (unique_ptr, shared_ptr, weak_ptr)? When should each be used?"
+  },
+  {
+    "question": "What is the difference between stack and heap allocation in C++?"
+  },
+  {
+    "question": "Explain copy constructor vs move constructor."
   },
   {
     "question": "What is polymorphism? Difference between compile-time and runtime polymorphism."
   },
   {
-    "question": "Explain virtual functions and vtable. Any performance concerns?"
+    "question": "How do virtual functions work internally? What is a vtable?"
   },
   {
-    "question": "What are lambda expressions? Where would you use it ?"
+    "question": "What are lambda expressions and where are they useful?"
   },
   {
-    "question": "Explain constexpr vs const."
+    "question": "Explain constexpr vs const in C++."
   },
   {
     "question": "What is the difference between std::vector and std::array?"
   },
   {
-    "question": "How does std::move work internally, and why is it not actually moving data?"
+    "question": "What is std::move and why is it used?"
   },
   {
-    "question": "What is the Rule of 3/5/0 in C++ and why is it important in system-level design?"
+    "question": "What is the Rule of 3/5/0 in C++?"
   },
   {
-    "question": "Explain the difference between std::thread and thread pools. When would you use each in AAOS?"
+    "question": "What is the difference between deep copy and shallow copy in C++?"
   },
   {
-    "question": "How do you design a thread-safe class in C++ using mutex and atomic operations?"
+    "question": "How do you design a thread-safe class in C++?"
   }
 ]
