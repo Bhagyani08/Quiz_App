@@ -1,35 +1,62 @@
 [
-  {"question": "What is a Rule-Based System?"},
-  {"question": "What is an example of rule-based logic in a car?"},
-  {"question": "What is Fuzzy Logic used for?"},
-  {"question": "Difference between normal rules and fuzzy rules?"},
-  {"question": "What is Association Rule Learning?"},
-  {"question": "What is Rule Induction?"},
-  {"question": "What is supervised learning?"},
-  {"question": "Give one automotive example of supervised learning."},
-  {"question": "What is a Decision Tree?"},
-  {"question": "What does regression predict?"},
-  {"question": "What does classification predict?"},
-  {"question": "Why do we train/test split data?"},
-  {"question": "What is unsupervised learning?"},
-  {"question": "Give one automotive example of unsupervised learning."},
-  {"question": "What does K-Means do?"},
-  {"question": "What is anomaly detection?"},
-  {"question": "What does PCA do?"},
-  {"question": "What is Reinforcement Learning?"},
-  {"question": "Give an automotive example of RL."},
-  {"question": "What is Q-Learning?"},
-  {"question": "What is a neural network?"},
-  {"question": "What is a CNN mainly used for?"},
-  {"question": "What is an RNN/LSTM used for?"},
-  {"question": "What is the main advantage of LSTM?"},
-  {"question": "What is an MLP?"},
-  {"question": "What are Tiny Neural Networks used for?"},
-  {"question": "Why is DL better than ML for images?"},
-  {"question": "What is Hybrid AI?"},
-  {"question": "Give an example of Hybrid AI."},
-  {"question": "What is the difference between AI and ML?"}
+  {
+    "question": "How would you design a circular buffer in C for real-time data (e.g., vehicle signals)?"
+  },
+  {
+    "question": "Explain memory alignment and padding. Why does it matter in IPC or HAL layers?"
+  },
+  {
+    "question": "What is the difference between shallow copy and deep copy in struct handling?"
+  },
+  {
+    "question": "How do you debug memory leaks in native layers of Android?"
+  },
+  {
+    "question": "Explain linker vs compiler responsibilities in a C build system."
+  },
+  {
+    "question": "What are race conditions in C and how do you prevent them in multi-threaded systems?"
+  },
+  {
+    "question": "What is the difference between malloc, calloc, and realloc? When would fragmentation be a concern?"
+  },
+  {
+    "question": "Explain RAII and how it helps in resource management in Android native services."
+  },
+  {
+    "question": "What are smart pointers (unique_ptr, shared_ptr, weak_ptr)? When to use each?"
+  },
+  {
+    "question": "Difference between stack vs heap allocation in C++ and performance implications."
+  },
+  {
+    "question": "Explain copy constructor vs move constructor with real-world example."
+  },
+  {
+    "question": "What is polymorphism? Difference between compile-time and runtime polymorphism."
+  },
+  {
+    "question": "Explain virtual functions and vtable. Any performance concerns?"
+  },
+  {
+    "question": "What are lambda expressions? Where would you use them in Android services?"
+  },
+  {
+    "question": "Explain constexpr vs const."
+  },
+  {
+    "question": "What is the difference between std::vector and std::array?"
+  },
+  {
+    "question": "How does std::move work internally, and why is it not actually moving data?"
+  },
+  {
+    "question": "What is the Rule of 3/5/0 in C++ and why is it important in system-level design?"
+  },
+  {
+    "question": "Explain the difference between std::thread and thread pools. When would you use each in AAOS?"
+  },
+  {
+    "question": "How do you design a thread-safe class in C++ using mutex and atomic operations?"
+  }
 ]
-
-
-
