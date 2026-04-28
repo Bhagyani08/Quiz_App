@@ -3,13 +3,13 @@
     "question": "How would you design a circular buffer in C for real-time data (e.g., vehicle signals)?"
   },
   {
-    "question": "Explain memory alignment and padding. Why does it matter in IPC or HAL layers?"
+    "question": "Explain memory alignment and padding?"
   },
   {
     "question": "What is the difference between shallow copy and deep copy in struct handling?"
   },
   {
-    "question": "How do you debug memory leaks in native layers of Android?"
+    "question": "How do you debug memory leaks ?"
   },
   {
     "question": "Explain linker vs compiler responsibilities in a C build system."
@@ -21,7 +21,7 @@
     "question": "What is the difference between malloc, calloc, and realloc? When would fragmentation be a concern?"
   },
   {
-    "question": "Explain RAII and how it helps in resource management in Android native services."
+    "question": "Explain RAII and how it helps in resource management ."
   },
   {
     "question": "What are smart pointers (unique_ptr, shared_ptr, weak_ptr)? When to use each?"
@@ -39,7 +39,7 @@
     "question": "Explain virtual functions and vtable. Any performance concerns?"
   },
   {
-    "question": "What are lambda expressions? Where would you use them in Android services?"
+    "question": "What are lambda expressions? Where would you use it ?"
   },
   {
     "question": "Explain constexpr vs const."
