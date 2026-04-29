@@ -148,7 +148,7 @@ def login():
         session["tab_switch_count"] = 0
 
         session["start_time"] = int(time.time())
-        session["time_limit"] = 20 * 60   # 20 minutes
+        session["time_limit"] = 15 * 60   # 15 minutes
 
         return redirect("/quiz")
 
